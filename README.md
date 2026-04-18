@@ -6,6 +6,8 @@ Verify that cookie consent banners actually work. Clicks "Reject All" and checks
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![CI](https://github.com/trustyourwebsite/cookie-consent-validator/actions/workflows/ci.yml/badge.svg)](https://github.com/trustyourwebsite/cookie-consent-validator/actions/workflows/ci.yml)
 
+Built by [TrustYourWebsite](https://trustyourwebsite.nl) — automated website compliance scanning for EU businesses.
+
 ## Why?
 
 Under GDPR and the Dutch Telecommunicatiewet, websites must stop all non-essential tracking when users reject cookies. The Dutch Data Protection Authority (AP) has fined companies like Kruidvat (€600K) and Coolblue (€40K) for non-compliant cookie banners, and has warned 200+ organizations in 2025.
@@ -149,6 +151,12 @@ Generic detection supports 13 languages: English, Dutch, German, French, Italian
 This tool checks cookie consent only. For a complete compliance scan covering GDPR, accessibility, security headers, copyright, and more:
 
 **[TrustYourWebsite.nl](https://trustyourwebsite.nl)** — Automated compliance scanning for European businesses
+
+## Related
+
+- [TrustYourWebsite](https://trustyourwebsite.nl) — Full website compliance scanning for EU businesses
+- [@trustyourwebsite/dns-auth-check](https://github.com/trustyourwebsite/dns-auth-check) — SPF, DKIM, DMARC, BIMI and MTA-STS email authentication auditor
+- [@trustyourwebsite/security-headers](https://github.com/trustyourwebsite/security-headers) — HTTP security headers grader (HSTS, CSP, X-Frame-Options)
 
 ## Contributing
 

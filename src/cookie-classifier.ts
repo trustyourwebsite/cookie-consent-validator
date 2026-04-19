@@ -13,6 +13,9 @@ export const TRACKING_COOKIE_PATTERNS: RegExp[] = [
   /^NID$/i, /^ANID$/i, /^APISID$/i,             // Google
   /^mp_/i,                                        // Mixpanel
   /^amplitude/i,                                  // Amplitude
+  /^YSC$/i, /^VISITOR_INFO1_LIVE$/i, /^PREF$/i,  // YouTube
+  /^_rdt_uuid/i,                                  // Reddit
+  /^ad-id$/i, /^ad-privacy$/i,                    // Amazon
 ];
 
 /** Cookie patterns that are strictly necessary and do not require consent. */
@@ -82,5 +85,8 @@ export function getTrackingCookieCategory(cookieName: string): string {
   if (/^NID$|^ANID$|^APISID$/i.test(cookieName)) return 'Google';
   if (/^mp_/i.test(cookieName)) return 'Mixpanel';
   if (/^amplitude/i.test(cookieName)) return 'Amplitude';
+  if (/^YSC$|^VISITOR_INFO1_LIVE$|^PREF$/i.test(cookieName)) return 'YouTube';
+  if (/^_rdt_uuid/i.test(cookieName)) return 'Reddit';
+  if (/^ad-id$|^ad-privacy$/i.test(cookieName)) return 'Amazon';
   return 'Unknown tracker';
 }

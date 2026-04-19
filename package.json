@@ -1,6 +1,6 @@
 {
   "name": "@trustyourwebsite/cookie-consent-validator",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Verify that cookie consent banners actually work. Clicks \"Reject All\" and checks if tracking cookies and scripts really stop.",
   "type": "module",
   "main": "dist/index.js",

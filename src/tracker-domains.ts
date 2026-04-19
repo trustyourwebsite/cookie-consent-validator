@@ -36,6 +36,19 @@ export const TRACKING_DOMAINS: TrackingDomain[] = [
   { pattern: /tr\.snapchat\.com/i, name: 'Snapchat Pixel', category: 'advertising' },
   { pattern: /static\.criteo\.net/i, name: 'Criteo', category: 'advertising' },
   { pattern: /omtrdc\.net/i, name: 'Adobe Analytics', category: 'advertising' },
+  // YouTube
+  { pattern: /youtube\.com/i, name: 'YouTube', category: 'analytics' },
+  { pattern: /googlevideo\.com/i, name: 'YouTube Video', category: 'analytics' },
+  // Reddit
+  { pattern: /events\.reddit\.com/i, name: 'Reddit Analytics', category: 'analytics' },
+  { pattern: /redditmedia\.com/i, name: 'Reddit Ads', category: 'advertising' },
+  // Amazon Ads
+  { pattern: /amazon-adsystem\.com/i, name: 'Amazon Ads', category: 'advertising' },
+  { pattern: /assoc-amazon\.com/i, name: 'Amazon Associates', category: 'advertising' },
+  // Crazy Egg
+  { pattern: /script\.crazyegg\.com/i, name: 'Crazy Egg', category: 'analytics' },
+  // VWO
+  { pattern: /dev\.visualwebsiteoptimizer\.com/i, name: 'VWO', category: 'analytics' },
   // Social
   { pattern: /platform\.twitter\.com\/widgets/i, name: 'Twitter Widget', category: 'social' },
   { pattern: /platform\.linkedin\.com/i, name: 'LinkedIn Widget', category: 'social' },

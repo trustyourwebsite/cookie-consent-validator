@@ -120,6 +120,17 @@ export const CMP_DEFINITIONS: CMPDefinition[] = [
       '[data-cookiefirst-action="accept"]',
     ],
   },
+  {
+    name: 'Usercentrics',
+    bannerSelector: '#usercentrics-root',
+    rejectSelectors: [
+      '[data-testid="uc-deny-all-button"]',
+    ],
+    acceptSelectors: [
+      '[data-testid="uc-accept-all-button"]',
+    ],
+    shadowDom: true,
+  },
 ];
 
 /**

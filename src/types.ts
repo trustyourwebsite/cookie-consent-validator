@@ -65,6 +65,7 @@ export interface CMPDefinition {
   bannerSelector: string;
   rejectSelectors: string[];
   acceptSelectors: string[];
+  shadowDom?: boolean;
 }
 
 export interface TrackingDomain {

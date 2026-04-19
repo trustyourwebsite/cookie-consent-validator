@@ -56,9 +56,28 @@ export async function validateConsent(
       }
     });
 
-    // Navigate to URL
+    // Navigate to URL with retry logic for transient failures
     log(`Navigating to ${url}...`);
-    await page.goto(url, { waitUntil: 'networkidle2', timeout });
+    const RETRY_DELAYS = [1000, 2000];
+    const MAX_ATTEMPTS = 3;
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      try {
+        await page.goto(url, { waitUntil: 'networkidle2', timeout });
+        break;
+      } catch (navError) {
+        const isRetryable =
+          navError instanceof Error &&
+          (navError.message.includes('TimeoutError') ||
+            navError.message.includes('timeout') ||
+            navError.message.includes('net::') ||
+            navError.message.includes('Navigation timeout'));
+        if (!isRetryable || attempt === MAX_ATTEMPTS) {
+          throw navError;
+        }
+        log(`Navigation attempt ${attempt} failed, retrying in ${RETRY_DELAYS[attempt - 1]}ms...`);
+        await sleep(RETRY_DELAYS[attempt - 1]);
+      }
+    }
 
     // Wait for potential CMP to load (some CMPs load async)
     await sleep(2000);

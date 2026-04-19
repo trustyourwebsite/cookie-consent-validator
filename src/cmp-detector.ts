@@ -17,6 +17,29 @@ export async function detectCMP(page: Page): Promise<CMPDetectionResult> {
     const banner = await page.$(cmp.bannerSelector);
     if (!banner) continue;
 
+    // Shadow DOM CMPs (e.g., Usercentrics) render inside a shadow root
+    if (cmp.shadowDom) {
+      const shadowRejectFound = await page.evaluate(
+        (containerSel: string, rejectSels: string[]) => {
+          const container = document.querySelector(containerSel);
+          if (!container?.shadowRoot) return false;
+          for (const sel of rejectSels) {
+            const btn = container.shadowRoot.querySelector(sel);
+            if (btn) return true;
+          }
+          return false;
+        },
+        cmp.bannerSelector,
+        cmp.rejectSelectors,
+      );
+
+      // For shadow DOM CMPs, use a special selector prefix to signal shadow DOM handling
+      const rejectSelector = shadowRejectFound
+        ? `shadow:${cmp.bannerSelector}:${cmp.rejectSelectors[0]}`
+        : null;
+      return { name: cmp.name, rejectSelector, bannerFound: true };
+    }
+
     // Check if banner is visible
     const isVisible = await banner.evaluate((el) => {
       const style = window.getComputedStyle(el);
@@ -138,6 +161,32 @@ async function findRejectButton(page: Page, banner: ElementHandle): Promise<stri
  * @returns true if the button was clicked successfully.
  */
 export async function clickRejectButton(page: Page, selector: string): Promise<boolean> {
+  // Handle shadow DOM selectors (format: "shadow:<container>:<innerSelector>")
+  if (selector.startsWith('shadow:')) {
+    const parts = selector.split(':');
+    const containerSelector = parts[1];
+    const innerSelector = parts.slice(2).join(':');
+    try {
+      const clicked = await page.evaluate(
+        (containerSel: string, innerSel: string) => {
+          const container = document.querySelector(containerSel);
+          if (!container?.shadowRoot) return false;
+          const btn = container.shadowRoot.querySelector(innerSel) as HTMLElement | null;
+          if (btn) {
+            btn.click();
+            return true;
+          }
+          return false;
+        },
+        containerSelector,
+        innerSelector,
+      );
+      return clicked;
+    } catch {
+      return false;
+    }
+  }
+
   try {
     await page.waitForSelector(selector, { visible: true, timeout: 5000 });
     await page.click(selector);

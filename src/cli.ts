@@ -116,7 +116,7 @@ Examples:
   cookie-consent-validator example.com --format json --output report.json
   cookie-consent-validator https://example.com --screenshot --verbose
 
-Full compliance scan → https://trustyourwebsite.nl
+Full compliance scan → https://trustyourwebsite.com
 `);
 }
 
@@ -171,7 +171,7 @@ function formatTable(result: ConsentValidationResult): string {
   }
 
   lines.push('');
-  lines.push('Full scan with remediation advice → https://trustyourwebsite.nl');
+  lines.push('Full scan with remediation advice → https://trustyourwebsite.com');
   lines.push('');
 
   return lines.join('\n');

@@ -46,9 +46,9 @@
     "puppeteer",
     "reject-all"
   ],
-  "author": "TrustYourWebsite <info@trustyourwebsite.nl> (https://trustyourwebsite.nl)",
+  "author": "TrustYourWebsite <info@trustyourwebsite.nl> (https://trustyourwebsite.com)",
   "license": "MIT",
-  "homepage": "https://trustyourwebsite.nl",
+  "homepage": "https://trustyourwebsite.com",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/trustyourwebsite/cookie-consent-validator.git"

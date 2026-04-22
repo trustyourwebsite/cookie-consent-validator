@@ -6,7 +6,7 @@ Verify that cookie consent banners actually work. Clicks "Reject All" and checks
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![CI](https://github.com/trustyourwebsite/cookie-consent-validator/actions/workflows/ci.yml/badge.svg)](https://github.com/trustyourwebsite/cookie-consent-validator/actions/workflows/ci.yml)
 
-Built by [TrustYourWebsite](https://trustyourwebsite.nl) — automated website compliance scanning for EU businesses.
+Built by [TrustYourWebsite](https://trustyourwebsite.com) — automated website compliance scanning for EU businesses.
 
 ## Why?
 
@@ -81,7 +81,7 @@ Tracker Requests After Reject: 2
 
 Result: FAIL — 5 violations found
 
-Full scan with remediation advice → https://trustyourwebsite.nl
+Full scan with remediation advice → https://trustyourwebsite.com
 ```
 
 ## Use as a Library
@@ -150,11 +150,11 @@ Generic detection supports 13 languages: English, Dutch, German, French, Italian
 
 This tool checks cookie consent only. For a complete compliance scan covering GDPR, accessibility, security headers, copyright, and more:
 
-**[TrustYourWebsite.nl](https://trustyourwebsite.nl)** — Automated compliance scanning for European businesses
+**[TrustYourWebsite.com](https://trustyourwebsite.com)** — Automated compliance scanning for European businesses
 
 ## Related
 
-- [TrustYourWebsite](https://trustyourwebsite.nl) — Full website compliance scanning for EU businesses
+- [TrustYourWebsite](https://trustyourwebsite.com) — Full website compliance scanning for EU businesses
 - [@trustyourwebsite/dns-auth-check](https://github.com/trustyourwebsite/dns-auth-check) — SPF, DKIM, DMARC, BIMI and MTA-STS email authentication auditor
 - [@trustyourwebsite/security-headers](https://github.com/trustyourwebsite/security-headers) — HTTP security headers grader (HSTS, CSP, X-Frame-Options)
 
@@ -172,4 +172,4 @@ npm run build
 
 ## License
 
-MIT — built by [TrustYourWebsite](https://trustyourwebsite.nl)
+MIT — built by [TrustYourWebsite](https://trustyourwebsite.com)

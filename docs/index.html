@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cookie-consent-validator &mdash; Verify your cookie banner actually stops tracking</title>
+<meta name="description" content="Open-source CLI that clicks &quot;Reject All&quot; on cookie banners and checks if tracking cookies and scripts really stop. GDPR / Dutch Telecom Act compliance. CI-friendly. Built by TrustYourWebsite.">
+<link rel="canonical" href="https://trustyourwebsite.github.io/cookie-consent-validator/">
+
+<meta property="og:title" content="cookie-consent-validator &mdash; Verify your cookie banner actually stops tracking">
+<meta property="og:description" content="Open-source CLI that clicks &quot;Reject All&quot; and checks if tracking cookies and scripts really stop. GDPR-ready. CI-friendly.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://trustyourwebsite.github.io/cookie-consent-validator/">
+<meta name="twitter:card" content="summary_large_image">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "@trustyourwebsite/cookie-consent-validator",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Cross-platform",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "url": "https://trustyourwebsite.github.io/cookie-consent-validator/",
+  "downloadUrl": "https://www.npmjs.com/package/@trustyourwebsite/cookie-consent-validator",
+  "codeRepository": "https://github.com/trustyourwebsite/cookie-consent-validator",
+  "license": "https://opensource.org/licenses/MIT",
+  "author": {
+    "@type": "Organization",
+    "name": "TrustYourWebsite",
+    "url": "https://trustyourwebsite.com"
+  }
+}
+</script>
+
+<style>
+  :root {
+    --bg: #0b1020;
+    --panel: #131a33;
+    --ink: #e7ecf7;
+    --muted: #98a2c2;
+    --accent: #6ee7b7;
+    --accent-ink: #052e1a;
+    --border: #232b4a;
+    --code-bg: #0a0f23;
+    --good: #6ee7b7;
+    --warn: #fbbf24;
+    --bad: #f87171;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    background: radial-gradient(1200px 600px at 70% -10%, #1c2550 0%, var(--bg) 60%);
+    min-height: 100vh;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  header.nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .brand { font-weight: 600; letter-spacing: 0.2px; }
+  .brand a { color: var(--ink); }
+  .nav-right { display: flex; gap: 18px; font-size: 14px; color: var(--muted); }
+  .nav-right a { color: var(--muted); }
+
+  .hero { padding: 64px 0 32px; }
+  .eyebrow { color: var(--accent); font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+  h1 { font-size: clamp(28px, 4.2vw, 44px); line-height: 1.15; margin: 12px 0 16px; letter-spacing: -0.02em; }
+  .lede { font-size: 18px; color: var(--muted); max-width: 720px; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .btn {
+    display: inline-block;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    border: 1px solid transparent;
+    transition: transform 0.05s ease, background 0.15s ease;
+  }
+  .btn:hover { text-decoration: none; }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover { background: #5fd6a7; }
+  .btn-ghost { background: transparent; color: var(--ink); border-color: var(--border); }
+  .btn-ghost:hover { background: var(--panel); }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+    margin: 22px 0;
+  }
+  .panel h2 { margin-top: 0; font-size: 20px; }
+  .grid { display: grid; gap: 14px; }
+  @media (min-width: 720px) {
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  }
+  .card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .card h3 { margin: 0 0 8px; font-size: 16px; }
+  .card p { margin: 0; color: var(--muted); font-size: 14px; }
+
+  pre, code {
+    font-family: "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 13.5px;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    overflow-x: auto;
+    color: #d6dcef;
+  }
+  code { background: rgba(255,255,255,0.06); padding: 1px 6px; border-radius: 4px; }
+  pre code { background: none; padding: 0; }
+
+  .report { color: #c8d0e7; }
+  .report .ok { color: var(--good); }
+  .report .warn { color: var(--warn); }
+  .report .bad { color: var(--bad); }
+  .report .dim { color: var(--muted); }
+
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 14px; }
+  th { color: var(--muted); font-weight: 600; }
+
+  .promo {
+    margin-top: 36px;
+    padding: 28px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #1a2547 0%, #2a3a72 100%);
+    border: 1px solid #2d3a6a;
+  }
+  .promo h2 { margin-top: 0; font-size: 22px; }
+  .promo p { color: #c6cfee; max-width: 640px; }
+
+  footer { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--border); color: var(--muted); font-size: 14px; display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="nav">
+    <div class="brand">
+      <a href="https://trustyourwebsite.github.io/cookie-consent-validator/">@trustyourwebsite/cookie-consent-validator</a>
+    </div>
+    <nav class="nav-right">
+      <a href="#install">Install</a>
+      <a href="#cmps">CMPs</a>
+      <a href="#ci">CI</a>
+      <a href="https://github.com/trustyourwebsite/cookie-consent-validator">GitHub</a>
+      <a href="https://trustyourwebsite.com">TrustYourWebsite</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">Open source &middot; MIT &middot; GDPR &amp; Dutch Telecom Act</div>
+    <h1>Verify your cookie banner actually stops tracking.</h1>
+    <p class="lede">
+      A Node.js CLI that loads your site, clicks <em>Reject All</em>, and then checks whether tracking cookies
+      and tracker requests really stop. Catches the most common GDPR cookie-consent violation &mdash; the one that
+      got Kruidvat fined &euro;600K and Coolblue fined &euro;40K. Built by
+      <a href="https://trustyourwebsite.com">TrustYourWebsite</a> as part of our compliance scanning suite.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://trustyourwebsite.com">Get a free full-site compliance scan &rarr;</a>
+      <a class="btn btn-ghost" href="https://github.com/trustyourwebsite/cookie-consent-validator">View on GitHub</a>
+    </div>
+  </section>
+
+  <section class="panel" id="install">
+    <h2>Quick start</h2>
+    <pre><code>npx @trustyourwebsite/cookie-consent-validator https://example.com</code></pre>
+    <p style="color: var(--muted); margin-bottom: 0;">
+      Requires Node.js 18+. Want the full picture &mdash; security headers, DNS auth, accessibility, GDPR text and more &mdash;
+      across your entire site? <a href="https://trustyourwebsite.com">Run a free scan at trustyourwebsite.com</a>.
+    </p>
+  </section>
+
+  <section class="panel">
+    <h2>Sample output</h2>
+<pre class="report"><code>Cookie Consent Validation Report
+================================
+URL:             https://example.com
+CMP Detected:    <span class="ok">Cookiebot</span>
+Reject Button:   <span class="ok">Found and clicked</span>
+
+Cookies Before Reject: 12
+Cookies After Reject:  8
+Tracking Cookies After: <span class="bad">3  &larr; VIOLATIONS</span>
+
+VIOLATIONS:
+  <span class="bad">&#10007;</span> _ga (.google-analytics.com) &mdash; Google Analytics cookie persists after rejection
+  <span class="bad">&#10007;</span> _fbp (.facebook.com) &mdash; Facebook cookie persists after rejection
+  <span class="bad">&#10007;</span> _gcl_au (.example.com) &mdash; Google Ads cookie persists after rejection
+
+Tracker Requests After Reject: <span class="bad">2</span>
+  <span class="bad">&#10007;</span> www.google-analytics.com &mdash; Google Analytics request fired after rejection
+  <span class="bad">&#10007;</span> connect.facebook.net &mdash; Facebook Pixel request fired after rejection
+
+Result: <span class="bad">FAIL</span> &mdash; 5 violations found
+
+<span class="dim">Full scan with remediation advice &rarr; https://trustyourwebsite.com</span></code></pre>
+  </section>
+
+  <section class="grid grid-3">
+    <div class="card">
+      <h3>Detects 11+ major CMPs</h3>
+      <p>Cookiebot, OneTrust, Quantcast, Didomi, Osano, Complianz, CookieYes, Iubenda, Borlabs, TrustArc, CookieFirst &mdash; plus generic detection in 13 languages.</p>
+    </div>
+    <div class="card">
+      <h3>Real browser, real cookies</h3>
+      <p>Headless Chromium via Puppeteer loads the page like a user, captures cookies before <em>and</em> after rejection, and watches network traffic for tracker beacons.</p>
+    </div>
+    <div class="card">
+      <h3>CI-friendly</h3>
+      <p>Exit code <code>0</code> = pass, <code>1</code> = violations, <code>2</code> = error. JSON output with <code>--format json</code>. Drop it into GitHub Actions in one line.</p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Why this matters</h2>
+    <p style="color: var(--muted);">
+      Under GDPR and the Dutch Telecommunicatiewet, websites must stop all non-essential tracking when users reject cookies.
+      Most cookie banners <em>look</em> compliant but aren't &mdash; tracking continues after <em>Reject All</em>.
+      The Dutch Data Protection Authority (AP) has fined
+      <a href="https://www.autoriteitpersoonsgegevens.nl/" >Kruidvat &euro;600K and Coolblue &euro;40K</a>
+      for non-compliant banners, and has warned 200+ organizations in 2025. This tool catches that &mdash; before a regulator does.
+    </p>
+  </section>
+
+  <section class="panel" id="cmps">
+    <h2>CMPs we detect</h2>
+    <table>
+      <thead>
+        <tr><th>CMP</th><th>Detection</th><th>Reject button</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Cookiebot</td><td><code>#CybotCookiebotDialog</code></td><td><code>#CybotCookiebotDialogBodyLevelButtonLevelOptinDeclineAll</code></td></tr>
+        <tr><td>OneTrust</td><td><code>#onetrust-banner-sdk</code></td><td><code>#onetrust-reject-all-handler</code></td></tr>
+        <tr><td>Quantcast</td><td><code>#qc-cmp2-container</code></td><td><code>button[mode="secondary"]</code></td></tr>
+        <tr><td>Didomi</td><td><code>#didomi-notice</code></td><td><code>#didomi-notice-disagree-button</code></td></tr>
+        <tr><td>Osano</td><td><code>.osano-cm-window</code></td><td><code>.osano-cm-deny</code></td></tr>
+        <tr><td>Complianz</td><td><code>.cmplz-cookiebanner</code></td><td><code>.cmplz-deny</code></td></tr>
+        <tr><td>CookieYes</td><td><code>.cky-consent-container</code></td><td><code>.cky-btn-reject</code></td></tr>
+        <tr><td>Iubenda</td><td><code>.iubenda-cs-container</code></td><td><code>.iubenda-cs-reject-btn</code></td></tr>
+        <tr><td>Borlabs Cookie</td><td><code>#BorlabsCookieBox</code></td><td><code>[data-cookie-refuse]</code></td></tr>
+        <tr><td>TrustArc</td><td><code>#truste-consent-banner</code></td><td><code>.truste-consent-required</code></td></tr>
+        <tr><td>CookieFirst</td><td><code>#cookiefirst-root</code></td><td><code>[data-cookiefirst-action="reject"]</code></td></tr>
+        <tr><td>Custom / generic</td><td>Text-based detection</td><td>Multilingual button text matching (13 languages)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel" id="ci">
+    <h2>Drop into CI</h2>
+    <pre><code># GitHub Actions
+- name: Check cookie consent compliance
+  run: npx @trustyourwebsite/cookie-consent-validator https://your-site.com --format json --output consent-report.json
+
+- name: Upload report
+  if: always()
+  uses: actions/upload-artifact@v4
+  with:
+    name: consent-report
+    path: consent-report.json</code></pre>
+  </section>
+
+  <section class="panel">
+    <h2>Use as a library</h2>
+<pre><code>import { validateConsent } from '@trustyourwebsite/cookie-consent-validator';
+
+const result = await validateConsent('https://example.com', {
+  timeout: 10000,
+  waitAfterReject: 3000,
+  screenshot: true,
+});
+
+console.log(result.cmpDetected);         // 'Cookiebot'
+console.log(result.rejectButtonClicked); // true
+console.log(result.violations);          // [...violations]
+console.log(result.passed);              // false</code></pre>
+  </section>
+
+  <section class="promo">
+    <h2>Cookie consent is one piece of the compliance puzzle.</h2>
+    <p>
+      A real audit also covers HTTP security headers, DNS email authentication (SPF / DKIM / DMARC / BIMI / MTA-STS),
+      accessibility, TLS configuration, GDPR policy text and broken-link health &mdash; on every page of your site.
+      <a href="https://trustyourwebsite.com">TrustYourWebsite</a> runs all of those automatically and gives you a single fix-it report.
+    </p>
+    <p style="margin-top: 20px;">
+      <a class="btn btn-primary" href="https://trustyourwebsite.com">Run a free scan at trustyourwebsite.com &rarr;</a>
+    </p>
+  </section>
+
+  <section class="grid grid-2">
+    <div class="card">
+      <h3><a href="https://github.com/trustyourwebsite/security-headers">security-headers</a></h3>
+      <p>Grade your website's HTTP security headers from A+ to F &mdash; HSTS, CSP, X-Frame-Options and more.</p>
+    </div>
+    <div class="card">
+      <h3><a href="https://github.com/trustyourwebsite/dns-auth-check">dns-auth-check</a></h3>
+      <p>Audit SPF, DKIM, DMARC, BIMI and MTA-STS for any domain.</p>
+    </div>
+  </section>
+
+  <footer>
+    <div>
+      Built by <a href="https://trustyourwebsite.com">TrustYourWebsite</a> &mdash; automated website compliance for EU businesses.
+    </div>
+    <div>
+      <a href="https://github.com/trustyourwebsite/cookie-consent-validator">Source</a> &middot;
+      <a href="https://www.npmjs.com/package/@trustyourwebsite/cookie-consent-validator">npm</a> &middot;
+      <a href="https://github.com/trustyourwebsite/cookie-consent-validator/blob/main/LICENSE">MIT</a>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

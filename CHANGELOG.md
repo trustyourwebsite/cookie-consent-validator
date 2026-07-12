@@ -18,6 +18,15 @@ All notable changes to this project will be documented in this file. The format 
 - Dropped the misleading `playwright` keyword — the package uses Puppeteer.
 
 
+## [1.1.1] — 2026-05-20
+
+### Changed
+- Switched the `author` email and all TrustYourWebsite links to the canonical trustyourwebsite.com domain.
+
+### Docs
+- Added a GitHub Pages landing page.
+
+
 ## [1.1.0] — 2026-04-19
 
 ### Added

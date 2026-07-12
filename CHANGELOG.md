@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] — 2026-07-12
+
+### Added
+- **localStorage / sessionStorage tracking**: web-storage keys matching known tracker patterns that appear or persist after "Reject All" are now reported as violations. Previously only HTTP cookies were checked, so storage-based tracking could slip through as a false pass.
+- **`--cmp-delay <ms>` flag** to control how long to wait for the consent banner to load (was a hardcoded 2s).
+
+### Changed
+- After a successful "Reject All", the scanner now waits for the banner to actually be dismissed before measuring the post-rejection state, reducing timing-related false negatives.
+- Stricter CLI validation for `--format` and `--timeout`.
+- The library entry point can now be imported without launching a browser (CLI runs only when invoked directly).
+- **Publishing hardened**: npm provenance attestation on release, a conditional `exports` map, `prepublishOnly` now runs lint + tests + build, and CI runs a non-blocking dependency audit.
+
+### Removed
+- Dropped the misleading `playwright` keyword — the package uses Puppeteer.
+
+
 ## [1.1.0] — 2026-04-19
 
 ### Added

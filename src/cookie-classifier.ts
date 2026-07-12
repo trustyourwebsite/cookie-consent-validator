@@ -70,6 +70,18 @@ export function isEssentialCookie(cookie: Cookie): boolean {
 }
 
 /**
+ * Check if a localStorage / sessionStorage key looks like tracking state.
+ * Reuses the same name patterns as tracking cookies, since analytics SDKs
+ * (Google Analytics, Amplitude, Mixpanel, etc.) mirror their cookie names
+ * into web storage.
+ * @param key - The storage key name.
+ * @returns true if the key matches a known tracking pattern.
+ */
+export function isTrackingStorageKey(key: string): boolean {
+  return TRACKING_COOKIE_PATTERNS.some((p) => p.test(key));
+}
+
+/**
  * Get the tracker name for a tracking cookie based on its name pattern.
  */
 export function getTrackingCookieCategory(cookieName: string): string {

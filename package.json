@@ -1,10 +1,17 @@
 {
   "name": "@trustyourwebsite/cookie-consent-validator",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Verify that cookie consent banners actually work. Clicks \"Reject All\" and checks if tracking cookies and scripts really stop.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "bin": {
     "cookie-consent-validator": "dist/cli.js"
   },
@@ -16,9 +23,10 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsc",
+    "lint": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run lint && npm run test && npm run build"
   },
   "keywords": [
     "cookie",
@@ -42,7 +50,6 @@
     "cli",
     "nodejs",
     "typescript",
-    "playwright",
     "puppeteer",
     "reject-all"
   ],

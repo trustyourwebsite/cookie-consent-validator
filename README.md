@@ -14,6 +14,12 @@ Under GDPR and the Dutch Telecommunicatiewet, websites must stop all non-essenti
 
 Most cookie banners look compliant but aren't — tracking continues after clicking "Reject All". This tool catches that.
 
+## How this differs from a static cookie scanner
+
+Most "cookie scanners" load a page and list the cookies and scripts they find. That tells you what a site sets, but not whether the consent banner actually works.
+
+This tool drives a real headless browser (Puppeteer): it loads the page, detects the consent banner, **clicks "Reject All"**, then re-inspects state. It compares before and after to check that tracking cookies, `localStorage`/`sessionStorage` keys, and network requests to known trackers actually stop. A banner that keeps loading Google Analytics or Facebook Pixel after rejection is flagged as a violation — something a static, list-only scan cannot see.
+
 ## Quick Start
 
 ```bash
@@ -34,6 +40,7 @@ Options:
   --format <format>         Output format: json, text, table (default: table)
   --timeout <ms>            Page load timeout in ms (default: 30000)
   --wait-after-reject <ms>  Wait time after clicking reject (default: 3000)
+  --cmp-delay <ms>          Wait time for the CMP to load before interacting (default: 2000)
   --screenshot              Save before/after screenshots
   --output, -o <file>       Save report to file
   --verbose, -v             Show debug output
@@ -142,9 +149,10 @@ Generic detection supports 13 languages: English, Dutch, German, French, Italian
 ## What It Checks
 
 1. **Cookie persistence** — Tracking cookies (Google Analytics, Facebook, Hotjar, etc.) that remain set after clicking "Reject All"
-2. **Tracker requests** — Network requests to known tracking domains that fire after rejection
-3. **CMP detection** — Identifies which consent management platform is in use
-4. **Reject button** — Whether a "Reject All" button exists and is clickable
+2. **Web-storage tracking** — `localStorage` / `sessionStorage` keys matching known tracker patterns that persist or appear after rejection
+3. **Tracker requests** — Network requests to known tracking domains that fire after rejection
+4. **CMP detection** — Identifies which consent management platform is in use
+5. **Reject button** — Whether a "Reject All" button exists and is clickable
 
 ## Full Website Compliance Scan
 

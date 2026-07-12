@@ -5,6 +5,8 @@ export interface CMPDetectionResult {
   name: string | null;
   rejectSelector: string | null;
   bannerFound: boolean;
+  /** CSS selector of the detected banner container, when known. */
+  bannerSelector: string | null;
 }
 
 /**
@@ -37,7 +39,7 @@ export async function detectCMP(page: Page): Promise<CMPDetectionResult> {
       const rejectSelector = shadowRejectFound
         ? `shadow:${cmp.bannerSelector}:${cmp.rejectSelectors[0]}`
         : null;
-      return { name: cmp.name, rejectSelector, bannerFound: true };
+      return { name: cmp.name, rejectSelector, bannerFound: true, bannerSelector: cmp.bannerSelector };
     }
 
     // Check if banner is visible
@@ -56,13 +58,13 @@ export async function detectCMP(page: Page): Promise<CMPDetectionResult> {
           return style.display !== 'none' && style.visibility !== 'hidden';
         });
         if (btnVisible) {
-          return { name: cmp.name, rejectSelector: selector, bannerFound: true };
+          return { name: cmp.name, rejectSelector: selector, bannerFound: true, bannerSelector: cmp.bannerSelector };
         }
       }
     }
 
     // CMP found but no reject button
-    return { name: cmp.name, rejectSelector: null, bannerFound: true };
+    return { name: cmp.name, rejectSelector: null, bannerFound: true, bannerSelector: cmp.bannerSelector };
   }
 
   // Fallback: detect generic cookie banners
@@ -84,7 +86,7 @@ async function detectGenericBanner(page: Page): Promise<CMPDetectionResult> {
 
       // Look for reject button within this banner
       const rejectSelector = await findRejectButton(page, banner);
-      return { name: 'Custom', rejectSelector, bannerFound: true };
+      return { name: 'Custom', rejectSelector, bannerFound: true, bannerSelector: selector };
     } catch {
       // Selector failed, try next
     }
@@ -128,10 +130,10 @@ async function detectGenericBanner(page: Page): Promise<CMPDetectionResult> {
   );
 
   if (result.found) {
-    return { name: 'Custom', rejectSelector: result.rejectSelector, bannerFound: true };
+    return { name: 'Custom', rejectSelector: result.rejectSelector, bannerFound: true, bannerSelector: null };
   }
 
-  return { name: null, rejectSelector: null, bannerFound: false };
+  return { name: null, rejectSelector: null, bannerFound: false, bannerSelector: null };
 }
 
 async function findRejectButton(page: Page, banner: ElementHandle): Promise<string | null> {

@@ -10,7 +10,7 @@ Built by [TrustYourWebsite](https://trustyourwebsite.com) — automated website 
 
 ## Why?
 
-Under GDPR and the Dutch Telecommunicatiewet, websites must stop all non-essential tracking when users reject cookies. The Dutch Data Protection Authority (AP) has fined companies like Kruidvat (€600K) and Coolblue (€40K) for non-compliant cookie banners, and has warned 200+ organizations in 2025.
+Under GDPR and the Dutch Telecommunicatiewet, websites must stop all non-essential tracking when users reject cookies. The Dutch Data Protection Authority (AP) has fined companies like Kruidvat (€50K, reduced from €600K on objection in June 2025) and Coolblue (€40K) for non-compliant cookie banners, and has warned 200+ organizations in 2025.
 
 Most cookie banners look compliant but aren't — tracking continues after clicking "Reject All". This tool catches that.
 

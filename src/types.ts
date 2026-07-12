@@ -3,6 +3,8 @@ export interface ValidateConsentOptions {
   timeout?: number;
   /** Wait time after clicking reject in ms (default: 3000) */
   waitAfterReject?: number;
+  /** Wait time for the CMP to load before interacting, in ms (default: 2000) */
+  cmpLoadDelay?: number;
   /** Save before/after screenshots (default: false) */
   screenshot?: boolean;
   /** Output directory for screenshots (default: current directory) */
@@ -29,11 +31,20 @@ export interface TrackerRequest {
 }
 
 export interface Violation {
-  type: 'cookie' | 'request';
+  type: 'cookie' | 'request' | 'storage';
+  /** Where the violation was observed. Defaults conceptually to 'cookie' for HTTP-cookie violations. */
+  source: 'cookie' | 'localStorage' | 'sessionStorage' | 'request';
   name: string;
   domain: string;
   category: string;
   description: string;
+}
+
+export interface StorageSnapshot {
+  /** localStorage keys present at snapshot time. */
+  localStorage: string[];
+  /** sessionStorage keys present at snapshot time. */
+  sessionStorage: string[];
 }
 
 export interface ConsentValidationResult {
@@ -44,6 +55,8 @@ export interface ConsentValidationResult {
   rejectButtonClicked: boolean;
   cookiesBefore: Cookie[];
   cookiesAfter: Cookie[];
+  storageBefore: StorageSnapshot;
+  storageAfter: StorageSnapshot;
   trackersBefore: TrackerRequest[];
   trackersAfter: TrackerRequest[];
   violations: Violation[];

@@ -1,13 +1,25 @@
 import puppeteer from 'puppeteer';
 import type { Page, Browser, HTTPRequest } from 'puppeteer';
 import * as path from 'node:path';
-import type { Cookie, TrackerRequest, Violation, ConsentValidationResult, ValidateConsentOptions } from './types.js';
+import type {
+  Cookie,
+  TrackerRequest,
+  Violation,
+  StorageSnapshot,
+  ConsentValidationResult,
+  ValidateConsentOptions,
+} from './types.js';
 import { detectCMP, clickRejectButton } from './cmp-detector.js';
 import { matchTracker } from './tracker-domains.js';
-import { isTrackingCookie, getTrackingCookieCategory } from './cookie-classifier.js';
+import { isTrackingCookie, isTrackingStorageKey, getTrackingCookieCategory } from './cookie-classifier.js';
 
 const DEFAULT_TIMEOUT = 30_000;
 const DEFAULT_WAIT_AFTER_REJECT = 3000;
+const DEFAULT_CMP_LOAD_DELAY = 2000;
+/** Max time to wait for the banner element to disappear after a reject click. */
+const BANNER_DISMISS_TIMEOUT = 3000;
+
+const EMPTY_STORAGE_SNAPSHOT: StorageSnapshot = { localStorage: [], sessionStorage: [] };
 
 /**
  * Validate cookie consent on a URL by:
@@ -23,6 +35,7 @@ export async function validateConsent(
   const {
     timeout = DEFAULT_TIMEOUT,
     waitAfterReject = DEFAULT_WAIT_AFTER_REJECT,
+    cmpLoadDelay = DEFAULT_CMP_LOAD_DELAY,
     screenshot = false,
     outputDir = process.cwd(),
     verbose = false,
@@ -80,11 +93,15 @@ export async function validateConsent(
     }
 
     // Wait for potential CMP to load (some CMPs load async)
-    await sleep(2000);
+    await sleep(cmpLoadDelay);
 
     // Record cookies before interaction
     const cookiesBefore = await getCookies(page);
     log(`Cookies before: ${cookiesBefore.length}`);
+
+    // Record web-storage keys before interaction
+    const storageBefore = await getStorageSnapshot(page);
+    log(`Storage keys before: ${storageBefore.localStorage.length} local, ${storageBefore.sessionStorage.length} session`);
 
     // Find tracker requests before rejection
     const trackersBefore = classifyTrackerRequests(requestsBefore);
@@ -117,6 +134,13 @@ export async function validateConsent(
 
     // Wait after rejection
     if (rejectClicked) {
+      // First, wait for the banner to actually disappear so the after-state is
+      // measured once the CMP has finished tearing down (best-effort).
+      if (cmp.bannerSelector) {
+        log('Waiting for banner to be dismissed...');
+        const dismissed = await waitForBannerDismissed(page, cmp.bannerSelector, BANNER_DISMISS_TIMEOUT);
+        log(`Banner dismissed: ${dismissed}`);
+      }
       log(`Waiting ${waitAfterReject}ms after rejection...`);
       await sleep(waitAfterReject);
     }
@@ -124,6 +148,10 @@ export async function validateConsent(
     // Record cookies after rejection
     const cookiesAfter = await getCookies(page);
     log(`Cookies after: ${cookiesAfter.length}`);
+
+    // Record web-storage keys after rejection
+    const storageAfter = await getStorageSnapshot(page);
+    log(`Storage keys after: ${storageAfter.localStorage.length} local, ${storageAfter.sessionStorage.length} session`);
 
     // Find tracker requests after rejection
     const trackersAfter = classifyTrackerRequests(requestsAfter);
@@ -138,7 +166,7 @@ export async function validateConsent(
     }
 
     // Find violations
-    const violations = findViolations(cookiesBefore, cookiesAfter, trackersAfter);
+    const violations = findViolations(cookiesBefore, cookiesAfter, trackersAfter, storageBefore, storageAfter);
 
     return {
       url,
@@ -148,6 +176,8 @@ export async function validateConsent(
       rejectButtonClicked: rejectClicked,
       cookiesBefore,
       cookiesAfter,
+      storageBefore,
+      storageAfter,
       trackersBefore,
       trackersAfter,
       violations,
@@ -165,6 +195,8 @@ export async function validateConsent(
       rejectButtonClicked: false,
       cookiesBefore: [],
       cookiesAfter: [],
+      storageBefore: { ...EMPTY_STORAGE_SNAPSHOT },
+      storageAfter: { ...EMPTY_STORAGE_SNAPSHOT },
       trackersBefore: [],
       trackersAfter: [],
       violations: [],
@@ -192,6 +224,63 @@ async function getCookies(page: Page): Promise<Cookie[]> {
   }));
 }
 
+/**
+ * Snapshot the localStorage and sessionStorage keys of the current page.
+ * Some pages block storage access (sandboxed / cross-origin); those errors are
+ * swallowed and reported as empty so a single storage failure never aborts the scan.
+ * @param page - The Puppeteer page to read storage from.
+ * @returns The set of localStorage and sessionStorage keys.
+ */
+async function getStorageSnapshot(page: Page): Promise<StorageSnapshot> {
+  try {
+    return await page.evaluate(() => {
+      const readKeys = (store: Storage): string[] => {
+        try {
+          return Object.keys(store);
+        } catch {
+          return [];
+        }
+      };
+      return {
+        localStorage: readKeys(window.localStorage),
+        sessionStorage: readKeys(window.sessionStorage),
+      };
+    });
+  } catch (error) {
+    // Storage access can throw in sandboxed contexts; degrade to empty snapshot.
+    console.error('getStorageSnapshot: failed to read web storage', error);
+    return { localStorage: [], sessionStorage: [] };
+  }
+}
+
+/**
+ * Wait for the banner element to disappear (detached or display:none) after a
+ * reject click, so the after-state is measured once the CMP has torn down.
+ * On timeout it resolves false rather than throwing.
+ * @param page - The Puppeteer page.
+ * @param bannerSelector - CSS selector of the banner container.
+ * @param timeout - Max time to wait in ms.
+ * @returns true if the banner disappeared within the timeout, false otherwise.
+ */
+async function waitForBannerDismissed(page: Page, bannerSelector: string, timeout: number): Promise<boolean> {
+  try {
+    await page.waitForFunction(
+      (sel: string) => {
+        const el = document.querySelector(sel);
+        if (!el) return true;
+        const style = window.getComputedStyle(el);
+        return style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0';
+      },
+      { timeout },
+      bannerSelector,
+    );
+    return true;
+  } catch {
+    // Timed out: banner still visible. Not fatal — continue with the after-scan.
+    return false;
+  }
+}
+
 function classifyTrackerRequests(urls: string[]): TrackerRequest[] {
   const trackers: TrackerRequest[] = [];
   const seen = new Set<string>();
@@ -211,6 +300,8 @@ function findViolations(
   cookiesBefore: Cookie[],
   cookiesAfter: Cookie[],
   trackersAfter: TrackerRequest[],
+  storageBefore: StorageSnapshot,
+  storageAfter: StorageSnapshot,
 ): Violation[] {
   const violations: Violation[] = [];
   const beforeNames = new Set(cookiesBefore.map((c) => c.name));
@@ -221,6 +312,7 @@ function findViolations(
       const persisted = beforeNames.has(cookie.name);
       violations.push({
         type: 'cookie',
+        source: 'cookie',
         name: cookie.name,
         domain: cookie.domain,
         category: getTrackingCookieCategory(cookie.name),
@@ -231,14 +323,56 @@ function findViolations(
     }
   }
 
+  // Check for tracking keys in localStorage / sessionStorage after rejection
+  violations.push(
+    ...findStorageViolations('localStorage', storageBefore.localStorage, storageAfter.localStorage),
+    ...findStorageViolations('sessionStorage', storageBefore.sessionStorage, storageAfter.sessionStorage),
+  );
+
   // Check for tracker requests fired after rejection
   for (const tracker of trackersAfter) {
     violations.push({
       type: 'request',
+      source: 'request',
       name: tracker.name,
       domain: new URL(tracker.url).hostname,
       category: tracker.category,
       description: `${tracker.name} request fired after rejection`,
+    });
+  }
+
+  return violations;
+}
+
+/**
+ * Find tracking storage keys that persist or newly appear after rejection.
+ * @param source - Which web-storage area the keys came from.
+ * @param before - Storage keys captured before the reject click.
+ * @param after - Storage keys captured after the reject click.
+ * @returns A violation per tracking key still present after rejection.
+ */
+function findStorageViolations(
+  source: 'localStorage' | 'sessionStorage',
+  before: string[],
+  after: string[],
+): Violation[] {
+  const violations: Violation[] = [];
+  const beforeKeys = new Set(before);
+  const label = source === 'localStorage' ? 'localStorage' : 'sessionStorage';
+
+  for (const key of after) {
+    if (!isTrackingStorageKey(key)) continue;
+    const persisted = beforeKeys.has(key);
+    const category = getTrackingCookieCategory(key);
+    violations.push({
+      type: 'storage',
+      source,
+      name: key,
+      domain: '',
+      category,
+      description: persisted
+        ? `${category} ${label} key persists after rejection`
+        : `${category} ${label} key set after rejection`,
     });
   }
 

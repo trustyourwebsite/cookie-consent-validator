@@ -164,7 +164,7 @@ const html = `<!doctype html>
   <div class="wrap">
     <header>
       <h1>${escapeHtml(fullName)}</h1>
-      <p class="intro">Release history for ${escapeHtml(fullName)}, maintained by <a href="https://trustyourwebsite.com">TrustYourWebsite</a>.</p>
+      <p class="intro">Release history for ${escapeHtml(fullName)}, maintained by <a href="https://trustyourwebsite.com/eu/en">TrustYourWebsite</a>.</p>
       <p class="meta-links">
         <a href="${githubUrl}">GitHub repository</a>
         <a href="${npmUrl}">npm package</a>
@@ -180,7 +180,9 @@ const html = `<!doctype html>
 ${changelogHtml}
 
     <footer>
-      Maintained by <a href="https://trustyourwebsite.com">trustyourwebsite.com</a>.
+      Maintained by <a href="https://trustyourwebsite.com/eu/en">TrustYourWebsite</a>, automated website compliance
+      scanning for businesses in the EU and the UK, and <a href="https://getuptocode.com">Get Up to Code</a>,
+      the same scanner for the United States and Canada.
     </footer>
   </div>
 </body>

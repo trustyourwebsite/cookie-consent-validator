@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{#
+  Search-engine verification for this docs host.
+
+  Read the Docs serves this project at /en/latest/ and 302s the host root, so a
+  verification file at the root is impossible and Google's file method failed
+  against the subdirectory property. The meta tag is verified on the page
+  itself, which sidesteps the redirect entirely.
+
+  The token is specific to the Search Console property for
+  tyw-cookie-consent-validator.readthedocs.io; the other two docs hosts need
+  their own.
+#}
+{% block extrahead %}
+  <meta name="google-site-verification" content="iFnzNjaPN0Si-6yEmFxiejRsFfYwWuG6VElJBch-Ve0">
+{% endblock %}

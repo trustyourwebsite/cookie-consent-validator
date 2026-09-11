@@ -5,7 +5,7 @@ repo_url: https://github.com/trustyourwebsite/cookie-consent-validator
 docs_dir: docs-rtd
 theme:
   name: readthedocs
-copyright: 'Maintained by <a href="https://trustyourwebsite.com">trustyourwebsite.com</a>'
+copyright: 'Maintained by <a href="https://trustyourwebsite.com/eu/en">TrustYourWebsite</a> (EU and UK) and <a href="https://getuptocode.com">Get Up to Code</a> (US and Canada)'
 nav:
   - Home: index.md
   - API Reference: api.md

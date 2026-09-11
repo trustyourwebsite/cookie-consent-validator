@@ -1,8 +1,8 @@
 # @trustyourwebsite/cookie-consent-validator
 
-Built and maintained by [TrustYourWebsite](https://trustyourwebsite.com), a compliance scanner for EU websites.
+Built and maintained by [TrustYourWebsite](https://trustyourwebsite.com/eu/en), automated website compliance scanning for businesses in the EU and the UK.
 
-US business? The same scanner runs at [getuptocode.com](https://getuptocode.com) (Get Up to Code), focused on ADA accessibility and privacy lawsuit risk.
+In the United States or Canada? The same scanner runs at [Get Up to Code](https://getuptocode.com).
 
 Verify that cookie consent banners actually work. This Node.js CLI loads your site, clicks "Reject All", and then checks whether tracking cookies and tracker requests really stop.
 

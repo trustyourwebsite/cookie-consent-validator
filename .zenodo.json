@@ -1,0 +1,39 @@
+{
+  "title": "cookie-consent-validator: a command line test for whether cookie banners honour rejection",
+  "upload_type": "software",
+  "description": "<p>Node.js command line tool that drives a real browser, clicks \"Reject All\" on a site's consent banner, waits for the banner to be dismissed, then measures what survived: tracking cookies still set, tracker requests still firing, and web-storage keys matching known tracker patterns. Built to measure the gap between a banner that looks compliant and one that behaves as it claims. Recognises the common consent management platforms and exits non-zero when violations are found.</p><p>Documentation: <a href=\"https://trustyourwebsite.github.io/cookie-consent-validator/\">https://trustyourwebsite.github.io/cookie-consent-validator/</a>. Released on npm as <code>@trustyourwebsite/cookie-consent-validator</code> under the MIT licence.</p><p>Maintained by <a href=\"https://trustyourwebsite.com/eu/en\">TrustYourWebsite</a>, which runs this check and others as a hosted scanner for businesses in the EU and the UK, and by <a href=\"https://getuptocode.com\">Get Up to Code</a>, the same scanner for the United States and Canada. This tool performs technical analysis and does not provide legal advice.</p>",
+  "creators": [
+    {
+      "name": "TrustYourWebsite",
+      "affiliation": "TrustYourWebsite"
+    }
+  ],
+  "license": "MIT",
+  "access_right": "open",
+  "keywords": [
+    "cookie consent",
+    "GDPR",
+    "ePrivacy",
+    "consent management platform",
+    "web tracking",
+    "browser automation",
+    "command line"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/trustyourwebsite/cookie-consent-validator",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://trustyourwebsite.github.io/cookie-consent-validator/",
+      "relation": "isDocumentedBy",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://www.npmjs.com/package/@trustyourwebsite/cookie-consent-validator",
+      "relation": "isIdenticalTo",
+      "scheme": "url"
+    }
+  ]
+}

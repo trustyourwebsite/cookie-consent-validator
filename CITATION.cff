@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "cookie-consent-validator: a command line test for whether cookie banners honour rejection"
+abstract: "Node.js command line tool that drives a real browser, clicks 'Reject All' on a site's consent banner, waits for the banner to be dismissed, then measures what survived: tracking cookies still set, tracker requests still firing, and web-storage keys matching known tracker patterns. Built to measure the gap between a banner that looks compliant and one that behaves as it claims. Recognises the common consent management platforms and exits non-zero when violations are found."
+type: software
+authors:
+  - name: "TrustYourWebsite"
+    website: "https://trustyourwebsite.com/eu/en"
+repository-code: "https://github.com/trustyourwebsite/cookie-consent-validator"
+url: "https://trustyourwebsite.github.io/cookie-consent-validator/"
+license: MIT
+version: "1.2.0"
+keywords:
+  - "cookie consent"
+  - "GDPR"
+  - "ePrivacy"
+  - "consent management platform"
+  - "web tracking"
+  - "browser automation"
+  - "command line"
